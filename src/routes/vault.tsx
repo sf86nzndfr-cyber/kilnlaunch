@@ -27,7 +27,7 @@ function Vault() {
 
   return (
     <main className="mx-auto max-w-6xl px-4 py-12">
-      <h1 className="text-5xl font-extrabold">The <em className="text-primary">cooling rack</em></h1>
+      <h1 className="text-4xl font-extrabold sm:text-5xl">The <em className="text-primary">cooling rack</em></h1>
       <p className="mt-2 text-sm text-muted-foreground">Token-2022 coins in your wallet, straight from Solana devnet.</p>
       {!address ? (
         <button onClick={connect} className="mt-8 bg-primary px-4 py-2 text-xs font-bold uppercase tracking-widest text-primary-foreground">Connect Phantom</button>

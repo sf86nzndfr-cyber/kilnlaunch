@@ -48,7 +48,7 @@ function TokenPage() {
           <div className="molten h-32 w-32 border-2 border-primary" />}
         <div>
           <p className="text-xs uppercase tracking-[0.4em] text-accent">${t.symbol}</p>
-          <h1 className="text-5xl font-extrabold md:text-7xl">{t.name}</h1>
+          <h1 className="break-words text-4xl font-extrabold sm:text-5xl md:text-7xl">{t.name}</h1>
           {t.description && <p className="mt-2 max-w-lg text-sm text-muted-foreground">{t.description}</p>}
         </div>
       </div>
