@@ -43,26 +43,25 @@ function TokenPage() {
     ["Update authority", t.updateAuthority ?? "—"], ["Metadata URI", t.uri || "—"],
   ];
   return (
-    <main className="mx-auto max-w-4xl px-4 py-12">
+    <main className="mx-auto max-w-5xl px-4 py-8">
       <div className="flex flex-wrap items-end gap-6">
-        {t.image ? <img src={t.image} alt={t.name} className="ember h-32 w-32 border-2 border-primary object-cover" /> :
-          <div className="molten h-32 w-32 border-2 border-primary" />}
+        {t.image ? <img src={t.image} alt={t.name} className="h-32 w-32 border border-primary object-cover" /> :
+          <div className="h-32 w-32 border border-primary" />}
         <div>
-          <p className="text-xs uppercase tracking-[0.4em] text-accent">${t.symbol}</p>
-          <h1 className="break-words text-4xl font-extrabold sm:text-5xl md:text-7xl">{t.name}</h1>
+          <p className="text-xs text-accent">${t.symbol}</p>
+          <h1 className="break-words text-5xl text-primary sm:text-7xl">{t.name}</h1>
           {t.description && <p className="mt-2 max-w-lg text-sm text-muted-foreground">{t.description}</p>}
         </div>
       </div>
-      <p className="mt-6 text-[10px] uppercase tracking-widest text-success">● live — subscribed to account changes</p>
-      <dl className="mt-4 divide-y-2 divide-border border-2 border-border">
+      <p className="mt-6 text-[11px] text-success">● live — subscribed to account changes</p>
+      <dl className="mt-4 divide-y divide-border border border-border">
         {rows.map(([k, v]) => (
           <div key={k} className="grid gap-1 p-3 text-xs sm:grid-cols-[180px_1fr]">
             <dt className="text-muted-foreground">{k}</dt><dd className="break-all">{v}</dd>
           </div>
         ))}
       </dl>
-      <a href={ex("address", t.mint)} target="_blank" rel="noreferrer" className="mt-6 inline-block bg-primary px-4 py-2 text-xs font-bold uppercase tracking-widest text-primary-foreground">View on Solana Explorer ↗</a>
-      <p className="mt-8 text-xs text-muted-foreground">Buy/sell on a bonding curve unlocks once the KILN curve program is deployed — see <Link to="/curve" className="text-accent underline">Curve program</Link>.</p>
+      <a href={ex("address", t.mint)} target="_blank" rel="noreferrer" className="mt-6 inline-block bg-primary px-4 py-2 text-xs uppercase text-primary-foreground">&gt; view on solana explorer ↗</a>
     </main>
   );
 }

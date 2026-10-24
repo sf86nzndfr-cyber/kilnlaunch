@@ -10,18 +10,12 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
-import { Route as CurveRouteImport } from './routes/curve'
 import { Route as VaultRouteImport } from './routes/vault'
 import { Route as TokenMintRouteImport } from './routes/token.$mint'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const CurveRoute = CurveRouteImport.update({
-  id: '/curve',
-  path: '/curve',
   getParentRoute: () => rootRouteImport,
 } as any)
 const VaultRoute = VaultRouteImport.update({
@@ -37,34 +31,30 @@ const TokenMintRoute = TokenMintRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/curve': typeof CurveRoute
   '/vault': typeof VaultRoute
   '/token/$mint': typeof TokenMintRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/curve': typeof CurveRoute
   '/vault': typeof VaultRoute
   '/token/$mint': typeof TokenMintRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
-  '/curve': typeof CurveRoute
   '/vault': typeof VaultRoute
   '/token/$mint': typeof TokenMintRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/curve' | '/vault' | '/token/$mint'
+  fullPaths: '/' | '/vault' | '/token/$mint'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/curve' | '/vault' | '/token/$mint'
-  id: '__root__' | '/' | '/curve' | '/vault' | '/token/$mint'
+  to: '/' | '/vault' | '/token/$mint'
+  id: '__root__' | '/' | '/vault' | '/token/$mint'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  CurveRoute: typeof CurveRoute
   VaultRoute: typeof VaultRoute
   TokenMintRoute: typeof TokenMintRoute
 }
@@ -76,13 +66,6 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/curve': {
-      id: '/curve'
-      path: '/curve'
-      fullPath: '/curve'
-      preLoaderRoute: typeof CurveRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/vault': {
@@ -104,7 +87,6 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  CurveRoute: CurveRoute,
   VaultRoute: VaultRoute,
   TokenMintRoute: TokenMintRoute,
 }

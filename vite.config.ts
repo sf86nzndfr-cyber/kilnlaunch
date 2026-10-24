@@ -27,6 +27,7 @@ const solanaServerStub: Plugin = {
 const bufferPkg = fileURLToPath(new URL("./node_modules/buffer/index.js", import.meta.url));
 const clientBufferShim: Plugin = {
   name: "kiln-client-buffer",
+  apply: "build", // dev uses Vite's pre-bundled buffer; raw CJS path breaks there
   enforce: "pre",
   resolveId(id) {
     if (this.environment?.name !== "client") return null;

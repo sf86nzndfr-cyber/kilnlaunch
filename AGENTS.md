@@ -10,4 +10,5 @@
 <!-- LOVABLE:END -->
 
 - Solana code lives in src/lib/solana-impl.ts and must only be loaded via loadSolana() from src/lib/load-solana.ts, which sets globalThis.Buffer in a separate awaited step first (same-chunk polyfill imports get reordered in production). vite.config.ts stubs solana-impl on the server (Solana libs can't resolve for the Worker) and forces client buffer/node:buffer imports to the npm `buffer` package (otherwise Vite externalizes it to an empty stub).
-- Bonding-curve Anchor program source is in programs/kiln; the app cannot deploy it, so trading UI stays off until a program ID is supplied.
+- Every launch tx tags KILN_REGISTRY as an extra read-only key on the createAccount ix; the home-page launch list is built from getSignaturesForAddress(KILN_REGISTRY), so there is no database. Phantom must sign before the mint keypair's partialSign.
+- Bonding-curve Anchor source stays in programs/kiln but has no page in the app (removed at user request).
