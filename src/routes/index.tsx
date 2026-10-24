@@ -1,6 +1,7 @@
 import { loadSolana } from "@/lib/load-solana";
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import type { Launch } from "@/lib/solana-impl";
 import { toast } from "sonner";
 import { usePhantom } from "@/hooks/use-phantom";
 
@@ -12,13 +13,13 @@ export const Route = createFileRoute("/")({
       { property: "og:title", content: "KILN — Solana token foundry" },
       { property: "og:description", content: "Launch real Solana tokens from your Phantom wallet. No simulations." },
       { property: "og:type", content: "website" },
-      { name: "twitter:card", content: "summary_large_image" },
+      { name: "twitter:card", content: "summary" },
     ],
   }),
   component: Forge,
 });
 
-const field = "w-full border-2 border-input bg-background px-3 py-2 text-base sm:text-sm outline-none focus:border-primary";
+const field = "w-full border border-input bg-background px-3 py-2 text-base text-foreground sm:text-sm outline-none focus:border-primary focus:crt-glow";
 
 function Forge() {
   const { address, provider, balance, connect, refresh } = usePhantom();
@@ -30,9 +31,13 @@ function Forge() {
   const airdrop = async () => {
     if (!provider?.publicKey) return;
     const s = await loadSolana();
-    const t = toast.loading("Requesting 1 devnet SOL…");
-    try { await s.requestAirdrop(provider.publicKey); toast.success("Airdrop landed", { id: t }); refresh(); }
-    catch { toast.error("Devnet faucet is rate-limited. Try faucet.solana.com.", { id: t }); }
+    const t = toast.loading("Requesting devnet SOL…");
+    try { await s.requestAirdrop(provider.publicKey); toast.success("Test SOL received", { id: t }); refresh(); }
+    catch {
+      toast.error("Solana's free faucet is busy. Opening the official faucet — your address is copied, paste it there.", { id: t, duration: 8000 });
+      try { await navigator.clipboard.writeText(provider.publicKey.toBase58()); } catch { /* ignore */ }
+      window.open("https://faucet.solana.com/", "_blank", "noopener");
+    }
   };
 
   const fire = async (e: React.FormEvent) => {
@@ -55,56 +60,80 @@ function Forge() {
   };
 
   return (
-    <main className="mx-auto grid max-w-6xl gap-10 px-4 py-8 md:py-12 lg:grid-cols-[1.1fr_1fr]">
-      <section className="relative">
-        <div className="molten pointer-events-none absolute -inset-x-10 -bottom-20 h-64 opacity-30 blur-2xl" />
-        <p className="text-xs uppercase tracking-[0.4em] text-accent">Furnace № 01 · Token-2022</p>
-        <h1 className="mt-4 text-5xl font-extrabold leading-[0.9] sm:text-6xl md:text-8xl">
-          Fire it<br /><em className="text-primary">into the</em><br />chain.
-        </h1>
-        <p className="mt-6 max-w-md text-sm text-muted-foreground">
-          Every token forged here is a real Solana mint, signed by your Phantom wallet. Name, symbol and art live
-          on-chain. Freeze authority is never set and mint authority is destroyed in the same transaction —
-          supply is final the moment it cools.
+    <main className="mx-auto max-w-5xl space-y-12 px-4 py-8">
+      <section>
+        <p className="text-xs text-muted-foreground">KILN v1.0 · SOLANA DEVNET · TOKEN-2022</p>
+        <h1 className="mt-2 text-5xl leading-none text-primary sm:text-7xl">LAUNCH A REAL TOKEN<span className="blink">█</span></h1>
+        <p className="mt-3 max-w-xl text-sm text-muted-foreground">
+          Signed by your Phantom wallet. Metadata on-chain. Mint authority revoked, no freeze — supply is final.
         </p>
-        <ul className="mt-8 space-y-2 text-xs">
-          {["Real wallet signature — nothing simulated", "On-chain metadata (Token-2022 extension)", "Mint authority revoked · no freeze", "Full supply delivered to your wallet"].map((x) => (
-            <li key={x} className="flex gap-3"><span className="text-primary">▲</span>{x}</li>
-          ))}
-        </ul>
         {address && (
-          <button onClick={airdrop} className="mt-8 border-b border-dashed border-accent text-xs text-accent">
-            Low on devnet SOL ({balance?.toFixed(3)})? Get 1 free →
+          <button onClick={airdrop} className="mt-3 text-xs text-accent underline">
+            &gt; balance {balance?.toFixed(3)} SOL — get free test SOL
           </button>
         )}
       </section>
 
-      <form onSubmit={fire} className="ember space-y-4 border-2 border-primary bg-card p-4 sm:p-6">
-        <h2 className="text-2xl font-bold">The mould</h2>
+      <form onSubmit={fire} className="space-y-4 border border-border p-4 sm:p-6">
+        <h2 className="text-3xl">&gt; NEW_TOKEN</h2>
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-[2fr_1fr]">
-          <label className="space-y-1 text-xs">Name<input className={field} maxLength={32} value={f.name} onChange={set("name")} placeholder="Molten Moose" /></label>
-          <label className="space-y-1 text-xs">Symbol<input className={field} maxLength={10} value={f.symbol} onChange={set("symbol")} placeholder="MOOSE" /></label>
+          <label className="space-y-1 text-xs">NAME<input className={field} maxLength={32} value={f.name} onChange={set("name")} placeholder="Green Screen" /></label>
+          <label className="space-y-1 text-xs">SYMBOL<input className={field} maxLength={10} value={f.symbol} onChange={set("symbol")} placeholder="GRN" /></label>
         </div>
-        <label className="block space-y-1 text-xs">Image URL<input className={field} value={f.image} onChange={set("image")} placeholder="https://arweave.net/…" /></label>
-        {f.image && <img src={f.image} alt="Token art preview" className="h-24 w-24 border-2 border-border object-cover" />}
-        <label className="block space-y-1 text-xs">Metadata JSON URI (optional)<input className={field} value={f.uri} onChange={set("uri")} placeholder="https://arweave.net/…json" /></label>
-        <label className="block space-y-1 text-xs">Description<textarea className={field} rows={2} maxLength={200} value={f.description} onChange={set("description")} /></label>
+        <label className="block space-y-1 text-xs">IMAGE URL<input className={field} value={f.image} onChange={set("image")} placeholder="https://…" /></label>
+        {f.image && <img src={f.image} alt="Token art preview" className="h-20 w-20 border border-border object-cover" />}
+        <label className="block space-y-1 text-xs">METADATA URI (OPTIONAL)<input className={field} value={f.uri} onChange={set("uri")} placeholder="https://…json" /></label>
+        <label className="block space-y-1 text-xs">DESCRIPTION<textarea className={field} rows={2} maxLength={200} value={f.description} onChange={set("description")} /></label>
         <div className="grid grid-cols-2 gap-3">
-          <label className="space-y-1 text-xs">Total supply<input className={field} type="number" min={1} value={f.supply} onChange={set("supply")} /></label>
-          <label className="space-y-1 text-xs">Decimals<input className={field} type="number" min={0} max={9} value={f.decimals} onChange={set("decimals")} /></label>
+          <label className="space-y-1 text-xs">SUPPLY<input className={field} type="number" min={1} value={f.supply} onChange={set("supply")} /></label>
+          <label className="space-y-1 text-xs">DECIMALS<input className={field} type="number" min={0} max={9} value={f.decimals} onChange={set("decimals")} /></label>
         </div>
-        <button disabled={busy} className="w-full bg-primary py-3 text-sm font-bold uppercase tracking-[0.3em] text-primary-foreground disabled:opacity-50">
-          {!address ? "Connect Phantom to forge" : busy ? "Firing… check Phantom" : "Fire the kiln"}
+        <button disabled={busy} className="w-full bg-primary py-3 font-display text-2xl text-primary-foreground disabled:opacity-50">
+          {!address ? "> CONNECT PHANTOM" : busy ? "> SIGNING… CHECK PHANTOM" : "> LAUNCH"}
         </button>
-        <p className="text-[10px] text-muted-foreground">Costs ≈0.005 devnet SOL in rent + fees. Runs on Solana devnet.</p>
+        <p className="text-[11px] text-muted-foreground">Cost ≈ 0.005 devnet SOL.</p>
         {result && (
-          <div className="border-2 border-success p-3 text-xs">
-            <p className="text-success">Forged. Mint address:</p>
+          <div className="border border-primary p-3 text-xs">
+            <p>OK. MINT:</p>
             <p className="break-all">{result.mint}</p>
-            <Link to="/token/$mint" params={{ mint: result.mint }} className="mt-2 inline-block text-accent underline">Open token page →</Link>
+            <Link to="/token/$mint" params={{ mint: result.mint }} className="mt-2 inline-block text-accent underline">&gt; open token</Link>
           </div>
         )}
       </form>
+
+      <LaunchList key={result?.mint ?? "all"} />
     </main>
+  );
+}
+
+function LaunchList() {
+  const [list, setList] = useState<Launch[] | null>(null);
+  const [err, setErr] = useState(false);
+  useEffect(() => {
+    loadSolana().then((s) => s.fetchLaunches()).then(setList).catch(() => setErr(true));
+  }, []);
+  return (
+    <section>
+      <h2 className="text-3xl">&gt; ALL LAUNCHES {list && <span className="text-muted-foreground">({list.length})</span>}</h2>
+      {err ? <p className="mt-3 text-sm text-destructive">Could not read Solana right now. Refresh to retry.</p>
+        : list === null ? <p className="mt-3 text-sm text-muted-foreground">reading chain<span className="blink">…</span></p>
+        : list.length === 0 ? <p className="mt-3 text-sm text-muted-foreground">No launches yet. Be the first.</p>
+        : (
+          <ul className="mt-3 divide-y divide-border border border-border">
+            {list.map((t) => (
+              <li key={t.mint}>
+                <Link to="/token/$mint" params={{ mint: t.mint }} className="flex items-center gap-3 p-3 hover:bg-primary hover:text-primary-foreground">
+                  {t.image ? <img src={t.image} alt={t.name} className="h-10 w-10 shrink-0 border border-border object-cover" /> : <div className="h-10 w-10 shrink-0 border border-border" />}
+                  <div className="min-w-0 flex-1">
+                    <p className="truncate text-sm">{t.name} <span className="opacity-70">${t.symbol}</span></p>
+                    <p className="truncate text-[11px] opacity-70">supply {t.supply} · by {t.creator.slice(0, 4)}…{t.creator.slice(-4)}</p>
+                  </div>
+                  <span className="hidden text-[11px] opacity-70 sm:block">{t.launchedAt ? new Date(t.launchedAt * 1000).toLocaleDateString() : ""}</span>
+                </Link>
+              </li>
+            ))}
+          </ul>
+        )}
+    </section>
   );
 }

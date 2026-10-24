@@ -27,22 +27,22 @@ function Vault() {
   }, [address, provider]);
 
   return (
-    <main className="mx-auto max-w-6xl px-4 py-12">
-      <h1 className="text-4xl font-extrabold sm:text-5xl">The <em className="text-primary">cooling rack</em></h1>
+    <main className="mx-auto max-w-5xl px-4 py-8">
+      <h1 className="text-5xl text-primary">&gt; MY TOKENS</h1>
       <p className="mt-2 text-sm text-muted-foreground">Token-2022 coins in your wallet, straight from Solana devnet.</p>
       {!address ? (
-        <button onClick={connect} className="mt-8 bg-primary px-4 py-2 text-xs font-bold uppercase tracking-widest text-primary-foreground">Connect Phantom</button>
+        <button onClick={connect} className="mt-8 bg-primary px-4 py-2 text-xs uppercase text-primary-foreground">Connect Phantom</button>
       ) : list === null ? <p className="mt-8 text-sm text-muted-foreground">Reading the chain…</p>
         : list.length === 0 ? <p className="mt-8 text-sm">Nothing here yet. <Link to="/" className="text-accent underline">Forge your first token</Link>.</p>
         : (
           <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {list.map((t) => (
-              <Link key={t.mint} to="/token/$mint" params={{ mint: t.mint }} className="group border-2 border-border bg-card p-4 hover:border-primary">
+              <Link key={t.mint} to="/token/$mint" params={{ mint: t.mint }} className="group border border-border p-4 hover:bg-primary hover:text-primary-foreground">
                 <div className="flex gap-3">
-                  {t.image ? <img src={t.image} alt={t.name} className="h-14 w-14 object-cover" /> : <div className="molten h-14 w-14" />}
-                  <div><p className="font-display text-xl font-bold group-hover:text-primary">{t.name}</p><p className="text-xs text-accent">${t.symbol}</p></div>
+                  {t.image ? <img src={t.image} alt={t.name} className="h-14 w-14 object-cover" /> : <div className="h-14 w-14 border border-border" />}
+                  <div><p className="font-display text-2xl">{t.name}</p><p className="text-xs opacity-70">${t.symbol}</p></div>
                 </div>
-                <p className="mt-3 text-xs text-muted-foreground">Holding {t.held} / {t.supply}</p>
+                <p className="mt-3 text-xs opacity-70">Holding {t.held} / {t.supply}</p>
               </Link>
             ))}
           </div>
