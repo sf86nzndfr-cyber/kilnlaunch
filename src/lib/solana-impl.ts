@@ -34,7 +34,10 @@ export async function getBalance(pk: PublicKey) {
 }
 
 export async function requestAirdrop(pk: PublicKey) {
-  const sig = await connection.requestAirdrop(pk, LAMPORTS_PER_SOL);
+  // The public devnet faucet often refuses 1 SOL; fall back to a smaller amount.
+  let sig: string;
+  try { sig = await connection.requestAirdrop(pk, LAMPORTS_PER_SOL); }
+  catch { sig = await connection.requestAirdrop(pk, LAMPORTS_PER_SOL / 2); }
   const bh = await connection.getLatestBlockhash();
   await connection.confirmTransaction({ signature: sig, ...bh }, "confirmed");
   return sig;
@@ -65,8 +68,12 @@ export async function launchToken(wallet: PhantomProvider, input: LaunchInput) {
   const ata = getAssociatedTokenAddressSync(mint, payer, false, TOKEN_2022_PROGRAM_ID);
   const amount = BigInt(Math.floor(input.supply)) * 10n ** BigInt(input.decimals);
 
+  const create = SystemProgram.createAccount({ fromPubkey: payer, newAccountPubkey: mint, space: mintLen, lamports, programId: TOKEN_2022_PROGRAM_ID });
+  // Tag the launch with the KILN registry address (read-only, ignored by the
+  // System Program) so every KILN launch can be found on-chain later.
+  create.keys.push({ pubkey: KILN_REGISTRY, isSigner: false, isWritable: false });
   const tx = new Transaction().add(
-    SystemProgram.createAccount({ fromPubkey: payer, newAccountPubkey: mint, space: mintLen, lamports, programId: TOKEN_2022_PROGRAM_ID }),
+    create,
     createInitializeMetadataPointerInstruction(mint, payer, mint, TOKEN_2022_PROGRAM_ID),
     createInitializeMintInstruction(mint, input.decimals, payer, null, TOKEN_2022_PROGRAM_ID),
     createInitializeInstruction({ programId: TOKEN_2022_PROGRAM_ID, metadata: mint, updateAuthority: payer, mint, mintAuthority: payer, name: input.name, symbol: input.symbol, uri: input.uri }),
@@ -135,3 +142,29 @@ export function subscribeMint(mintStr: string, cb: () => void) {
 
 export const explorer = (kind: "address" | "tx", v: string) =>
   `https://explorer.solana.com/${kind}/${v}?cluster=${CLUSTER}`;
+
+/** Fixed address every KILN launch transaction references (read-only). */
+export const KILN_REGISTRY = new PublicKey("7rBfE2JVq6ZR4DRac7Kvp5F8GLySeg41oLw1xo5kpf1m");
+
+export type Launch = TokenInfo & { launchedAt: number | null; creator: string };
+
+/** Every token launched through KILN, newest first, read straight from Solana. */
+export async function fetchLaunches(limit = 60): Promise<Launch[]> {
+  const sigs = await connection.getSignaturesForAddress(KILN_REGISTRY, { limit }, "confirmed");
+  const ok = sigs.filter((s) => !s.err);
+  const txs = await Promise.all(ok.map((s) =>
+    connection.getParsedTransaction(s.signature, { maxSupportedTransactionVersion: 0, commitment: "confirmed" }).catch(() => null)));
+  const found: { mint: string; creator: string; at: number | null }[] = [];
+  txs.forEach((tx, i) => {
+    for (const ix of tx?.transaction.message.instructions ?? []) {
+      const p = (ix as any).parsed;
+      if ((ix as any).program === "system" && p?.type === "createAccount" && p.info.owner === TOKEN_2022_PROGRAM_ID.toBase58()) {
+        found.push({ mint: p.info.newAccount, creator: p.info.source, at: ok[i].blockTime ?? null });
+      }
+    }
+  });
+  const out = await Promise.all(found.map(async (f) => {
+    try { return { ...(await fetchToken(f.mint)), launchedAt: f.at, creator: f.creator }; } catch { return null; }
+  }));
+  return out.filter(Boolean) as Launch[];
+}
