@@ -1,8 +1,9 @@
+import { loadSolana } from "@/lib/load-solana";
 import { createContext, useCallback, useContext, useEffect, useState, type ReactNode } from "react";
 import { toast } from "sonner";
 import type { PhantomProvider } from "@/lib/solana-impl";
 
-const sol = () => import("@/lib/solana-impl");
+const sol = () => loadSolana();
 
 type Ctx = {
   address: string | null; balance: number | null; installed: boolean;
