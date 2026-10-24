@@ -1,4 +1,5 @@
 import { createContext, useCallback, useContext, useEffect, useState, type ReactNode } from "react";
+import { toast } from "sonner";
 import type { PhantomProvider } from "@/lib/solana-impl";
 
 const sol = () => import("@/lib/solana-impl");
@@ -45,23 +46,38 @@ export function PhantomProviderRoot({ children }: { children: ReactNode }) {
   }, [refresh]);
 
   const connect = async () => {
-    // Re-check live in case the provider injected after the initial poll.
-    const live = provider ?? (await sol()).getPhantom();
+    // Everything up to the redirect must stay synchronous: iOS only hands a
+    // link to the Phantom app when it happens directly inside the tap. Any
+    // `await` before it (e.g. loading the Solana module) makes the tap dead.
+    const w = window as any;
+    const injected = w.phantom?.solana ?? w.solana;
+    const live: PhantomProvider | null = provider ?? (injected?.isPhantom ? injected : null);
     if (!live) {
-      const mobile = /iphone|ipad|android/i.test(navigator.userAgent);
-      const here = encodeURIComponent(window.location.href);
-      // On phones, reopen KILN inside the Phantom app's built-in browser.
-      // Must use phantom.com directly: phantom.app 301-redirects there, and
-      // iOS universal links that redirect never open the app — the tap looks
-      // dead. Desktop goes to the download page (never an app-store redirect).
-      window.location.href = mobile
-        ? `https://phantom.com/ul/browse/${here}?ref=${encodeURIComponent(window.location.origin)}`
+      const mobile = /iphone|ipad|ipod|android/i.test(navigator.userAgent);
+      // Inside the editor preview the site runs in a frame; send Phantom the
+      // real site address, not the frame's internal one.
+      const framed = window.self !== window.top;
+      const target = framed ? "https://kilnlaunch.lovable.app/" : window.location.href;
+      const url = mobile
+        ? `https://phantom.com/ul/browse/${encodeURIComponent(target)}?ref=${encodeURIComponent(new URL(target).origin)}`
         : "https://phantom.com/download";
+      if (framed || !mobile) {
+        // Frames can't navigate to apps; open a fresh top-level tab instead.
+        const opened = window.open(url, "_blank", "noopener");
+        if (!opened && mobile) window.location.href = url;
+      } else {
+        window.location.href = url;
+      }
       return;
     }
     if (!provider) setProvider(live);
-    const r = await live.connect();
-    setAddress(r.publicKey.toBase58()); refresh();
+    try {
+      const r = await live.connect();
+      setAddress(r.publicKey.toBase58()); refresh();
+    } catch (e: any) {
+      const msg = String(e?.message ?? e);
+      toast.error(/reject|denied|cancel/i.test(msg) ? "Connection declined in Phantom" : `Phantom: ${msg.slice(0, 140)}`);
+    }
   };
   const disconnect = async () => { await provider?.disconnect(); };
 
