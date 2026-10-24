@@ -5,6 +5,24 @@
 //     React/TanStack dedupe, error logger plugins, and sandbox detection (port/host/strictPort).
 // You can pass additional config via defineConfig({ vite: { ... }, etc... }) if needed.
 import { defineConfig } from "@lovable.dev/vite-tanstack-config";
+import type { Plugin } from "vite";
+
+// Solana libraries are browser-only (wallet signing). Keep them out of the server bundle:
+// on the server, the solana module resolves to an empty stub (it is only ever loaded via
+// dynamic import inside effects/handlers, which never run during SSR).
+const solanaServerStub: Plugin = {
+  name: "kiln-solana-server-stub",
+  enforce: "pre",
+  resolveId(id) {
+    if (this.environment?.name === "client") return null;
+    if (/(^|\/)lib\/solana-impl(\.ts)?$/.test(id)) return "\0solana-server-stub";
+    return null;
+  },
+  load(id) {
+    if (id === "\0solana-server-stub") return "export {};";
+    return null;
+  },
+};
 
 export default defineConfig({
   tanstackStart: {
@@ -12,4 +30,5 @@ export default defineConfig({
     // nitro/vite builds from this
     server: { entry: "server" },
   },
+  vite: { plugins: [solanaServerStub] },
 });
