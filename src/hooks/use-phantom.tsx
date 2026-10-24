@@ -45,14 +45,20 @@ export function PhantomProviderRoot({ children }: { children: ReactNode }) {
   }, [refresh]);
 
   const connect = async () => {
-    if (!provider) {
+    // Re-check live in case the provider injected after the initial poll.
+    const live = provider ?? (await sol()).getPhantom();
+    if (!live) {
       const mobile = /iphone|ipad|android/i.test(navigator.userAgent);
       const here = encodeURIComponent(window.location.href);
-      // On phones, reopen KILN inside the Phantom app's built-in browser
-      window.location.href = mobile ? `https://phantom.app/ul/browse/${here}?ref=${encodeURIComponent(window.location.origin)}` : "https://phantom.app/";
+      // On phones, reopen KILN inside the Phantom app's built-in browser;
+      // on desktop, send to the download page (never an app-store redirect).
+      window.location.href = mobile
+        ? `https://phantom.app/ul/browse/${here}?ref=${encodeURIComponent(window.location.origin)}`
+        : "https://phantom.app/download";
       return;
     }
-    const r = await provider.connect();
+    if (!provider) setProvider(live);
+    const r = await live.connect();
     setAddress(r.publicKey.toBase58()); refresh();
   };
   const disconnect = async () => { await provider?.disconnect(); };
