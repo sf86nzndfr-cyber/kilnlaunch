@@ -159,7 +159,7 @@ export async function fetchLaunches(limit = 60): Promise<Launch[]> {
     for (const ix of tx?.transaction.message.instructions ?? []) {
       const p = (ix as any).parsed;
       if ((ix as any).program === "system" && p?.type === "createAccount" && p.info.owner === TOKEN_2022_PROGRAM_ID.toBase58()) {
-        found.push({ mint: p.info.newAccount, creator: p.info.source, at: ok[i].blockTime ?? null });
+        found.push({ mint: p.info.newAccount, creator: p.info.source, at: ok[i]?.blockTime ?? null });
       }
     }
   });
