@@ -13,13 +13,9 @@ import type { Plugin } from "vite";
 const solanaServerStub: Plugin = {
   name: "kiln-solana-server-stub",
   enforce: "pre",
-  resolveId(id) {
+  transform(_code, id) {
     if (this.environment?.name === "client") return null;
-    if (/(^|\/)lib\/solana-impl(\.ts)?$/.test(id)) return "\0solana-server-stub";
-    return null;
-  },
-  load(id) {
-    if (id === "\0solana-server-stub") return "export {};";
+    if (/[\\/]lib[\\/]solana-impl\.ts(\?|$)/.test(id)) return { code: "export {};", map: null };
     return null;
   },
 };
