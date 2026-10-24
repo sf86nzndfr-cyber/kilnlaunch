@@ -1,3 +1,4 @@
+import { loadSolana } from "@/lib/load-solana";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import type { TokenInfo } from "@/lib/solana-impl";
@@ -24,7 +25,7 @@ function TokenPage() {
 
   useEffect(() => {
     let unsub = () => {};
-    import("@/lib/solana-impl").then((s) => {
+    loadSolana().then((s) => {
       setEx(() => s.explorer);
       const load = () => s.fetchToken(mint).then(setT).catch(() => setErr("No Token-2022 mint found at this address on devnet."));
       load();

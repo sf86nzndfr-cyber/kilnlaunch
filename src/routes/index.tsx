@@ -1,3 +1,4 @@
+import { loadSolana } from "@/lib/load-solana";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
 import { toast } from "sonner";
@@ -28,7 +29,7 @@ function Forge() {
 
   const airdrop = async () => {
     if (!provider?.publicKey) return;
-    const s = await import("@/lib/solana-impl");
+    const s = await loadSolana();
     const t = toast.loading("Requesting 1 devnet SOL…");
     try { await s.requestAirdrop(provider.publicKey); toast.success("Airdrop landed", { id: t }); refresh(); }
     catch { toast.error("Devnet faucet is rate-limited. Try faucet.solana.com.", { id: t }); }
@@ -40,7 +41,7 @@ function Forge() {
     if (!f.name.trim() || !f.symbol.trim()) return toast.error("Name and symbol are required");
     setBusy(true); setResult(null);
     try {
-      const s = await import("@/lib/solana-impl");
+      const s = await loadSolana();
       const r = await s.launchToken(provider, {
         name: f.name.trim().slice(0, 32), symbol: f.symbol.trim().toUpperCase().slice(0, 10),
         uri: f.uri.trim(), image: f.image.trim(), description: f.description.trim().slice(0, 200),

@@ -1,3 +1,4 @@
+import { loadSolana } from "@/lib/load-solana";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { usePhantom } from "@/hooks/use-phantom";
@@ -22,7 +23,7 @@ function Vault() {
   const [list, setList] = useState<(TokenInfo & { held: string })[] | null>(null);
   useEffect(() => {
     if (!provider?.publicKey) { setList(null); return; }
-    import("@/lib/solana-impl").then((s) => s.fetchHoldings(provider.publicKey!)).then(setList).catch(() => setList([]));
+    loadSolana().then((s) => s.fetchHoldings(provider.publicKey!)).then(setList).catch(() => setList([]));
   }, [address, provider]);
 
   return (
