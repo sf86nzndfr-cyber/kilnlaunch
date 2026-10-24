@@ -25,7 +25,14 @@ export function PhantomProviderRoot({ children }: { children: ReactNode }) {
   useEffect(() => {
     let alive = true;
     sol().then(async (s) => {
-      const p = s.getPhantom();
+      // Phantom's in-app browser injects the provider asynchronously — poll
+      // for a few seconds before concluding Phantom is absent, otherwise the
+      // connect button wrongly redirects to the store/download page.
+      let p: PhantomProvider | null = null;
+      for (let i = 0; i < 25 && alive && !p; i++) {
+        p = s.getPhantom();
+        if (!p) await new Promise((r) => setTimeout(r, 200));
+      }
       if (!alive) return;
       setProvider(p); setInstalled(!!p);
       if (!p) return;
@@ -38,14 +45,20 @@ export function PhantomProviderRoot({ children }: { children: ReactNode }) {
   }, [refresh]);
 
   const connect = async () => {
-    if (!provider) {
+    // Re-check live in case the provider injected after the initial poll.
+    const live = provider ?? (await sol()).getPhantom();
+    if (!live) {
       const mobile = /iphone|ipad|android/i.test(navigator.userAgent);
       const here = encodeURIComponent(window.location.href);
-      // On phones, reopen KILN inside the Phantom app's built-in browser
-      window.location.href = mobile ? `https://phantom.app/ul/browse/${here}?ref=${encodeURIComponent(window.location.origin)}` : "https://phantom.app/";
+      // On phones, reopen KILN inside the Phantom app's built-in browser;
+      // on desktop, send to the download page (never an app-store redirect).
+      window.location.href = mobile
+        ? `https://phantom.app/ul/browse/${here}?ref=${encodeURIComponent(window.location.origin)}`
+        : "https://phantom.app/download";
       return;
     }
-    const r = await provider.connect();
+    if (!provider) setProvider(live);
+    const r = await live.connect();
     setAddress(r.publicKey.toBase58()); refresh();
   };
   const disconnect = async () => { await provider?.disconnect(); };
