@@ -38,7 +38,13 @@ export function PhantomProviderRoot({ children }: { children: ReactNode }) {
   }, [refresh]);
 
   const connect = async () => {
-    if (!provider) { window.open("https://phantom.app/", "_blank"); return; }
+    if (!provider) {
+      const mobile = /iphone|ipad|android/i.test(navigator.userAgent);
+      const here = encodeURIComponent(window.location.href);
+      // On phones, reopen KILN inside the Phantom app's built-in browser
+      window.location.href = mobile ? `https://phantom.app/ul/browse/${here}?ref=${encodeURIComponent(window.location.origin)}` : "https://phantom.app/";
+      return;
+    }
     const r = await provider.connect();
     setAddress(r.publicKey.toBase58()); refresh();
   };
