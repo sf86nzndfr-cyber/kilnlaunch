@@ -9,5 +9,5 @@
 > the editor, so keep the branch in a working state.
 <!-- LOVABLE:END -->
 
-- Solana code lives in src/lib/solana-impl.ts and is only loaded via dynamic import() in the browser; it keeps web3/spl libs out of SSR and needs the Buffer polyfill imported first.
+- Solana code lives in src/lib/solana-impl.ts, loaded only via dynamic import() in the browser; vite.config.ts stubs it to an empty module for server builds because Solana libs cannot resolve for the Worker runtime. Keep the Buffer polyfill imported first.
 - Bonding-curve Anchor program source is in programs/kiln; the app cannot deploy it, so trading UI stays off until a program ID is supplied.
