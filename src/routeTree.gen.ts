@@ -10,33 +10,53 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as VaultRouteImport } from './routes/vault'
+import { Route as TokenMintRouteImport } from './routes/token.$mint'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const VaultRoute = VaultRouteImport.update({
+  id: '/vault',
+  path: '/vault',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const TokenMintRoute = TokenMintRouteImport.update({
+  id: '/token/$mint',
+  path: '/token/$mint',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/vault': typeof VaultRoute
+  '/token/$mint': typeof TokenMintRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/vault': typeof VaultRoute
+  '/token/$mint': typeof TokenMintRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/vault': typeof VaultRoute
+  '/token/$mint': typeof TokenMintRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths: '/' | '/vault' | '/token/$mint'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to: '/' | '/vault' | '/token/$mint'
+  id: '__root__' | '/' | '/vault' | '/token/$mint'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  VaultRoute: typeof VaultRoute
+  TokenMintRoute: typeof TokenMintRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -48,11 +68,27 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/vault': {
+      id: '/vault'
+      path: '/vault'
+      fullPath: '/vault'
+      preLoaderRoute: typeof VaultRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/token/$mint': {
+      id: '/token/$mint'
+      path: '/token/$mint'
+      fullPath: '/token/$mint'
+      preLoaderRoute: typeof TokenMintRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  VaultRoute: VaultRoute,
+  TokenMintRoute: TokenMintRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
