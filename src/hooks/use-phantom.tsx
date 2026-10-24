@@ -25,7 +25,14 @@ export function PhantomProviderRoot({ children }: { children: ReactNode }) {
   useEffect(() => {
     let alive = true;
     sol().then(async (s) => {
-      const p = s.getPhantom();
+      // Phantom's in-app browser injects the provider asynchronously — poll
+      // for a few seconds before concluding Phantom is absent, otherwise the
+      // connect button wrongly redirects to the store/download page.
+      let p: PhantomProvider | null = null;
+      for (let i = 0; i < 25 && alive && !p; i++) {
+        p = s.getPhantom();
+        if (!p) await new Promise((r) => setTimeout(r, 200));
+      }
       if (!alive) return;
       setProvider(p); setInstalled(!!p);
       if (!p) return;
