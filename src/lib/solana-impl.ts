@@ -94,7 +94,7 @@ function updateFieldIx(mint: PublicKey, auth: PublicKey, key: string, value: str
 import { createUpdateFieldInstruction as createUpdateField } from "@solana/spl-token-metadata";
 
 export type TokenInfo = {
-  mint: string; name: string; symbol: string; uri: string; image?: string; description?: string;
+  mint: string; name: string; symbol: string; uri: string; image?: string | undefined; description?: string | undefined;
   supply: string; decimals: number; mintAuthority: string | null; freezeAuthority: string | null;
   updateAuthority: string | null;
 };
@@ -109,7 +109,7 @@ export async function fetchToken(mintStr: string): Promise<TokenInfo> {
   const ui = Number(m.supply) / 10 ** m.decimals;
   return {
     mint: mintStr, name: md?.name ?? "Unknown", symbol: md?.symbol ?? "???", uri: md?.uri ?? "",
-    image: extra.image, description: extra.description, supply: ui.toLocaleString(), decimals: m.decimals,
+    image: extra["image"], description: extra["description"], supply: ui.toLocaleString(), decimals: m.decimals,
     mintAuthority: m.mintAuthority?.toBase58() ?? null, freezeAuthority: m.freezeAuthority?.toBase58() ?? null,
     updateAuthority: md?.updateAuthority?.toBase58() ?? null,
   };
