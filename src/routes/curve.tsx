@@ -19,7 +19,7 @@ function Curve() {
   return (
     <main className="mx-auto max-w-5xl px-4 py-12">
       <p className="text-xs uppercase tracking-[0.4em] text-accent">Status · awaiting deployment</p>
-      <h1 className="mt-3 text-5xl font-extrabold">The <em className="text-primary">curve</em></h1>
+      <h1 className="mt-3 text-4xl font-extrabold sm:text-5xl">The <em className="text-primary">curve</em></h1>
       <p className="mt-4 max-w-2xl text-sm text-muted-foreground">
         Constant-product curve (x·y=k) with 30 SOL virtual reserves, 1% fee and graduation to Raydium at 85 SOL.
         Buy and sell open in KILN once this program is deployed to devnet and its address is set in the app.

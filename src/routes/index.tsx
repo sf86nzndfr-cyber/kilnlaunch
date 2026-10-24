@@ -17,7 +17,7 @@ export const Route = createFileRoute("/")({
   component: Forge,
 });
 
-const field = "w-full border-2 border-input bg-background px-3 py-2 text-sm outline-none focus:border-primary";
+const field = "w-full border-2 border-input bg-background px-3 py-2 text-base sm:text-sm outline-none focus:border-primary";
 
 function Forge() {
   const { address, provider, balance, connect, refresh } = usePhantom();
@@ -54,11 +54,11 @@ function Forge() {
   };
 
   return (
-    <main className="mx-auto grid max-w-6xl gap-10 px-4 py-12 lg:grid-cols-[1.1fr_1fr]">
+    <main className="mx-auto grid max-w-6xl gap-10 px-4 py-8 md:py-12 lg:grid-cols-[1.1fr_1fr]">
       <section className="relative">
         <div className="molten pointer-events-none absolute -inset-x-10 -bottom-20 h-64 opacity-30 blur-2xl" />
         <p className="text-xs uppercase tracking-[0.4em] text-accent">Furnace № 01 · Token-2022</p>
-        <h1 className="mt-4 text-6xl font-extrabold leading-[0.9] md:text-8xl">
+        <h1 className="mt-4 text-5xl font-extrabold leading-[0.9] sm:text-6xl md:text-8xl">
           Fire it<br /><em className="text-primary">into the</em><br />chain.
         </h1>
         <p className="mt-6 max-w-md text-sm text-muted-foreground">
@@ -78,9 +78,9 @@ function Forge() {
         )}
       </section>
 
-      <form onSubmit={fire} className="ember space-y-4 border-2 border-primary bg-card p-6">
+      <form onSubmit={fire} className="ember space-y-4 border-2 border-primary bg-card p-4 sm:p-6">
         <h2 className="text-2xl font-bold">The mould</h2>
-        <div className="grid grid-cols-[2fr_1fr] gap-3">
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-[2fr_1fr]">
           <label className="space-y-1 text-xs">Name<input className={field} maxLength={32} value={f.name} onChange={set("name")} placeholder="Molten Moose" /></label>
           <label className="space-y-1 text-xs">Symbol<input className={field} maxLength={10} value={f.symbol} onChange={set("symbol")} placeholder="MOOSE" /></label>
         </div>
