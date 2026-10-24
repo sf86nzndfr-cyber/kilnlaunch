@@ -1,5 +1,4 @@
-import { Buffer } from "buffer";
-(globalThis as any).Buffer ??= Buffer;
+import "./buffer-polyfill";
 import {
   Connection, Keypair, PublicKey, SystemProgram, Transaction, LAMPORTS_PER_SOL, clusterApiUrl,
 } from "@solana/web3.js";
