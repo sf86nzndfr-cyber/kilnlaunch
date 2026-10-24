@@ -78,8 +78,10 @@ export async function launchToken(wallet: PhantomProvider, input: LaunchInput) {
   const bh = await connection.getLatestBlockhash();
   tx.feePayer = payer;
   tx.recentBlockhash = bh.blockhash;
-  tx.partialSign(mintKp);
+  // Phantom requires the wallet to sign FIRST; a transaction arriving already
+  // signed by another key is flagged by its safety scanner as "Request blocked".
   const signed = await wallet.signTransaction(tx);
+  signed.partialSign(mintKp);
   const sig = await connection.sendRawTransaction(signed.serialize());
   await connection.confirmTransaction({ signature: sig, ...bh }, "confirmed");
   return { mint: mint.toBase58(), signature: sig };
