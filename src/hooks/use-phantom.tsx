@@ -50,11 +50,13 @@ export function PhantomProviderRoot({ children }: { children: ReactNode }) {
     if (!live) {
       const mobile = /iphone|ipad|android/i.test(navigator.userAgent);
       const here = encodeURIComponent(window.location.href);
-      // On phones, reopen KILN inside the Phantom app's built-in browser;
-      // on desktop, send to the download page (never an app-store redirect).
+      // On phones, reopen KILN inside the Phantom app's built-in browser.
+      // Must use phantom.com directly: phantom.app 301-redirects there, and
+      // iOS universal links that redirect never open the app — the tap looks
+      // dead. Desktop goes to the download page (never an app-store redirect).
       window.location.href = mobile
-        ? `https://phantom.app/ul/browse/${here}?ref=${encodeURIComponent(window.location.origin)}`
-        : "https://phantom.app/download";
+        ? `https://phantom.com/ul/browse/${here}?ref=${encodeURIComponent(window.location.origin)}`
+        : "https://phantom.com/download";
       return;
     }
     if (!provider) setProvider(live);
