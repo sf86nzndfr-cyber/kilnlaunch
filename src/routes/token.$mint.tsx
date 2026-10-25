@@ -43,7 +43,7 @@ function TokenPage() {
     ["Update authority", t.updateAuthority ?? "—"], ["Metadata URI", t.uri || "—"],
   ];
   return (
-    <main className="mx-auto max-w-5xl px-4 py-8">
+    <main className="mx-auto max-w-5xl px-4 py-8 fade-up">
       <div className="flex flex-wrap items-end gap-6">
         {t.image ? <img src={t.image} alt={t.name} className="h-32 w-32 border border-primary object-cover" /> :
           <div className="h-32 w-32 border border-primary" />}

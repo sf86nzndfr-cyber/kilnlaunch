@@ -148,6 +148,30 @@
   }
   h1, h2, h3 { font-family: var(--font-display); font-weight: 400; letter-spacing: 0.02em; }
   ::selection { background: var(--color-primary); color: var(--color-primary-foreground); }
+  a, button { transition: color 0.15s ease, background-color 0.15s ease, border-color 0.15s ease, opacity 0.15s ease; }
 }
 @utility blink { animation: crt-blink 1s steps(1) infinite; }
 @keyframes crt-blink { 50% { opacity: 0; } }
+
+/* Subtle entrance: content fades and rises a few pixels on load */
+@utility fade-up { animation: fade-up 0.5s ease-out both; }
+@utility fade-up-1 { animation: fade-up 0.5s ease-out 0.08s both; }
+@utility fade-up-2 { animation: fade-up 0.5s ease-out 0.16s both; }
+@utility fade-up-3 { animation: fade-up 0.5s ease-out 0.24s both; }
+@keyframes fade-up {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: none; }
+}
+
+/* Faint, occasional flicker on the logo's green screen */
+@utility logo-flicker { animation: logo-flicker 5s ease-in-out infinite; }
+@keyframes logo-flicker {
+  0%, 88%, 100% { opacity: 1; }
+  90% { opacity: 0.72; }
+  92% { opacity: 0.95; }
+  94% { opacity: 0.8; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation: none !important; transition: none !important; }
+}

@@ -1,5 +1,6 @@
 import { Link } from "@tanstack/react-router";
 import { usePhantom } from "@/hooks/use-phantom";
+import logo from "@/assets/kiln-logo.png";
 
 export const short = (a: string) => `${a.slice(0, 4)}…${a.slice(-4)}`;
 
@@ -8,7 +9,8 @@ export function SiteHeader() {
   return (
     <header className="sticky top-0 z-20 border-b border-border bg-background">
       <div className="mx-auto flex max-w-5xl flex-wrap items-center gap-x-6 gap-y-2 px-4 py-3">
-        <Link to="/" className="font-display text-3xl leading-none text-primary">
+        <Link to="/" className="flex items-center gap-2 font-display text-3xl leading-none text-primary">
+          <img src={logo} alt="KILN logo" width={34} height={34} className="logo-flicker" />
           KILN<span className="blink">_</span>
         </Link>
         <nav className="order-3 flex w-full gap-5 text-xs uppercase sm:order-none sm:w-auto">
