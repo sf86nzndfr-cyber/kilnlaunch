@@ -61,7 +61,7 @@ function Forge() {
 
   return (
     <main className="mx-auto max-w-5xl space-y-12 px-4 py-8">
-      <section>
+      <section className="fade-up">
         <p className="text-xs text-muted-foreground">KILN v1.0 · SOLANA DEVNET · TOKEN-2022</p>
         <h1 className="mt-2 text-5xl leading-none text-primary sm:text-7xl">LAUNCH A REAL TOKEN<span className="blink">█</span></h1>
         <p className="mt-3 max-w-xl text-sm text-muted-foreground">
@@ -113,7 +113,7 @@ function LaunchList() {
     loadSolana().then((s) => s.fetchLaunches()).then(setList).catch(() => setErr(true));
   }, []);
   return (
-    <section>
+    <section className="fade-up-1">
       <h2 className="text-3xl">&gt; ALL LAUNCHES {list && <span className="text-muted-foreground">({list.length})</span>}</h2>
       {err ? <p className="mt-3 text-sm text-destructive">Could not read Solana right now. Refresh to retry.</p>
         : list === null ? <p className="mt-3 text-sm text-muted-foreground">reading chain<span className="blink">…</span></p>

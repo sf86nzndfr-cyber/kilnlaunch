@@ -27,7 +27,7 @@ function Vault() {
   }, [address, provider]);
 
   return (
-    <main className="mx-auto max-w-5xl px-4 py-8">
+    <main className="mx-auto max-w-5xl px-4 py-8 fade-up">
       <h1 className="text-5xl text-primary">&gt; MY TOKENS</h1>
       <p className="mt-2 text-sm text-muted-foreground">Token-2022 coins in your wallet, straight from Solana devnet.</p>
       {!address ? (
