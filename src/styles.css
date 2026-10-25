@@ -145,18 +145,10 @@
     background-color: var(--color-background);
     color: var(--color-foreground);
     font-family: var(--font-mono);
-    text-shadow: var(--glow);
-    background-image: radial-gradient(ellipse at center, transparent 55%, color-mix(in oklab, black 55%, transparent) 100%);
-    background-attachment: fixed;
     min-height: 100vh;
-  }
-  body::after {
-    content: ""; position: fixed; inset: 0; pointer-events: none; z-index: 50;
-    background: repeating-linear-gradient(0deg, color-mix(in oklab, black 22%, transparent) 0 1px, transparent 1px 3px);
   }
   h1, h2, h3 { font-family: var(--font-display); font-weight: 400; letter-spacing: 0.02em; }
   ::selection { background: var(--color-primary); color: var(--color-primary-foreground); }
 }
-@utility crt-glow { box-shadow: var(--glow); }
 @utility blink { animation: crt-blink 1s steps(1) infinite; }
 @keyframes crt-blink { 50% { opacity: 0; } }
