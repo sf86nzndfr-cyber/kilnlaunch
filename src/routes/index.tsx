@@ -8,20 +8,20 @@ import { usePhantom } from "@/hooks/use-phantom";
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "KILN — fire a real token onto Solana" },
-      { name: "description", content: "Connect Phantom and launch a real Token-2022 coin on Solana with on-chain metadata and revoked mint authority." },
-      { property: "og:title", content: "KILN — Solana token foundry" },
-      { property: "og:description", content: "Launch real Solana tokens from your Phantom wallet. No simulations." },
+      { title: "MINT.EXE — run a real token onto Solana" },
+      { name: "description", content: "Connect Phantom and execute a real Token-2022 coin on Solana with on-chain metadata and revoked mint authority." },
+      { property: "og:title", content: "MINT.EXE — Solana token program" },
+      { property: "og:description", content: "Execute real Solana tokens from your Phantom wallet. No simulations." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
     ],
   }),
-  component: Forge,
+  component: MintExe,
 });
 
 const field = "w-full border border-input bg-background px-3 py-2 text-base text-foreground sm:text-sm outline-none focus:border-primary";
 
-function Forge() {
+function MintExe() {
   const { address, provider, balance, connect, refresh } = usePhantom();
   const [f, setF] = useState({ name: "", symbol: "", image: "", uri: "", description: "", supply: "1000000000", decimals: "6" });
   const [busy, setBusy] = useState(false);
@@ -40,7 +40,7 @@ function Forge() {
     }
   };
 
-  const fire = async (e: React.FormEvent) => {
+  const run = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!provider || !address) return connect();
     if (!f.name.trim() || !f.symbol.trim()) return toast.error("Name and symbol are required");
@@ -52,7 +52,7 @@ function Forge() {
         uri: f.uri.trim(), image: f.image.trim(), description: f.description.trim().slice(0, 200),
         supply: Number(f.supply), decimals: Number(f.decimals),
       });
-      setResult(r); toast.success("Token fired onto Solana"); refresh();
+      setResult(r); toast.success("Token executed on Solana"); refresh();
     } catch (err: any) {
       const msg = String(err?.message ?? err);
       toast.error(/reject/i.test(msg) ? "You declined the signature in Phantom" : /insufficient|0x1\b|debit/i.test(msg) ? "Not enough SOL for rent + fees" : /blockhash/i.test(msg) ? "Blockhash expired — try again" : msg.slice(0, 160));
@@ -62,8 +62,8 @@ function Forge() {
   return (
     <main className="mx-auto max-w-5xl space-y-12 px-4 py-8">
       <section className="fade-up">
-        <p className="text-xs text-muted-foreground">KILN v1.0 · SOLANA DEVNET · TOKEN-2022</p>
-        <h1 className="mt-2 text-5xl leading-none text-primary sm:text-7xl">LAUNCH A REAL TOKEN<span className="blink">█</span></h1>
+        <p className="text-xs text-muted-foreground">C:\&gt; MINT.EXE v1.0 · SOLANA DEVNET · TOKEN-2022</p>
+        <h1 className="mt-2 text-5xl leading-none text-primary sm:text-7xl">RUN A REAL TOKEN<span className="blink">█</span></h1>
         <p className="mt-3 max-w-xl text-sm text-muted-foreground">
           Signed by your Phantom wallet. Metadata on-chain. Mint authority revoked, no freeze — supply is final.
         </p>
@@ -74,7 +74,7 @@ function Forge() {
         )}
       </section>
 
-      <form onSubmit={fire} className="space-y-4 border border-border p-4 sm:p-6">
+      <form onSubmit={run} className="space-y-4 border border-border p-4 sm:p-6">
         <h2 className="text-3xl">&gt; NEW_TOKEN</h2>
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-[2fr_1fr]">
           <label className="space-y-1 text-xs">NAME<input className={field} maxLength={32} value={f.name} onChange={set("name")} placeholder="Green Screen" /></label>
@@ -89,7 +89,7 @@ function Forge() {
           <label className="space-y-1 text-xs">DECIMALS<input className={field} type="number" min={0} max={9} value={f.decimals} onChange={set("decimals")} /></label>
         </div>
         <button disabled={busy} className="w-full bg-primary py-3 font-display text-2xl text-primary-foreground disabled:opacity-50">
-          {!address ? "> CONNECT PHANTOM" : busy ? "> SIGNING… CHECK PHANTOM" : "> LAUNCH"}
+          {!address ? "> CONNECT PHANTOM" : busy ? "> SIGNING… CHECK PHANTOM" : "> RUN"}
         </button>
         <p className="text-[11px] text-muted-foreground">Cost ≈ 0.005 devnet SOL.</p>
         {result && (
@@ -114,7 +114,7 @@ function LaunchList() {
   }, []);
   return (
     <section className="fade-up-1">
-      <h2 className="text-3xl">&gt; ALL LAUNCHES {list && <span className="text-muted-foreground">({list.length})</span>}</h2>
+      <h2 className="text-3xl">&gt; LAUNCH LOG {list && <span className="text-muted-foreground">({list.length})</span>}</h2>
       {err ? <p className="mt-3 text-sm text-destructive">Could not read Solana right now. Refresh to retry.</p>
         : list === null ? <p className="mt-3 text-sm text-muted-foreground">reading chain<span className="blink">…</span></p>
         : list.length === 0 ? <p className="mt-3 text-sm text-muted-foreground">No launches yet. Be the first.</p>

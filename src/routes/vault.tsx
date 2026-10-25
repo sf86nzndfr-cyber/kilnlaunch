@@ -7,9 +7,9 @@ import type { TokenInfo } from "@/lib/solana-impl";
 export const Route = createFileRoute("/vault")({
   head: () => ({
     meta: [
-      { title: "My tokens — KILN" },
+      { title: "My tokens — MINT.EXE" },
       { name: "description", content: "Every Token-2022 coin held by your connected Phantom wallet, read live from Solana." },
-      { property: "og:title", content: "My tokens — KILN" },
+      { property: "og:title", content: "My tokens — MINT.EXE" },
       { property: "og:description", content: "Your Solana tokens, read live from the chain." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
@@ -33,7 +33,7 @@ function Vault() {
       {!address ? (
         <button onClick={connect} className="mt-8 bg-primary px-4 py-2 text-xs uppercase text-primary-foreground">Connect Phantom</button>
       ) : list === null ? <p className="mt-8 text-sm text-muted-foreground">Reading the chain…</p>
-        : list.length === 0 ? <p className="mt-8 text-sm">Nothing here yet. <Link to="/" className="text-accent underline">Forge your first token</Link>.</p>
+        : list.length === 0 ? <p className="mt-8 text-sm">Nothing here yet. <Link to="/" className="text-accent underline">Run your first token</Link>.</p>
         : (
           <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {list.map((t) => (

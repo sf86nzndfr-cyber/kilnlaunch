@@ -81,8 +81,8 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "KILN — fire your token onto Solana" },
-      { name: "description", content: "KILN is an on-chain Solana token foundry. Connect Phantom and launch real tokens." },
+      { title: "MINT.EXE — run a real token onto Solana" },
+      { name: "description", content: "MINT.EXE is an on-chain Solana token program. Connect Phantom and execute real token launches." },
     ],
     links: [
       {

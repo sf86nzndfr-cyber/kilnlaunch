@@ -6,9 +6,9 @@ import type { TokenInfo } from "@/lib/solana-impl";
 export const Route = createFileRoute("/token/$mint")({
   head: ({ params }) => ({
     meta: [
-      { title: `Token ${params.mint.slice(0, 6)}… — KILN` },
-      { name: "description", content: "Live on-chain state of a Solana token forged in KILN." },
-      { property: "og:title", content: "Token on KILN" },
+      { title: `Token ${params.mint.slice(0, 6)}… — MINT.EXE` },
+      { name: "description", content: "Live on-chain state of a Solana token minted with MINT.EXE." },
+      { property: "og:title", content: "Token on MINT.EXE" },
       { property: "og:description", content: "Live on-chain token state on Solana." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
@@ -34,7 +34,7 @@ function TokenPage() {
     return () => unsub();
   }, [mint]);
 
-  if (err) return <main className="mx-auto max-w-3xl px-4 py-20"><p className="text-destructive">{err}</p><Link to="/" className="text-accent underline">Back to the forge</Link></main>;
+  if (err) return <main className="mx-auto max-w-3xl px-4 py-20"><p className="text-destructive">{err}</p><Link to="/" className="text-accent underline">Back to the terminal</Link></main>;
   if (!t) return <main className="mx-auto max-w-3xl px-4 py-20 text-muted-foreground">Reading the chain…</main>;
 
   const rows: [string, string][] = [
