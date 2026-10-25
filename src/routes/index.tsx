@@ -19,7 +19,7 @@ export const Route = createFileRoute("/")({
   component: Forge,
 });
 
-const field = "w-full border border-input bg-background px-3 py-2 text-base text-foreground sm:text-sm outline-none focus:border-primary focus:crt-glow";
+const field = "w-full border border-input bg-background px-3 py-2 text-base text-foreground sm:text-sm outline-none focus:border-primary";
 
 function Forge() {
   const { address, provider, balance, connect, refresh } = usePhantom();
